@@ -10,6 +10,10 @@ func (d deck) print() {
 	}
 }
 
+func deal(d deck, handSize int) (deck, deck) {
+	return d[:handSize], d[handSize:]
+}
+
 func newDeck() deck {
 	suits := []string{"Spades", "Clubs", "Hearts", "Diamonds"}
 	values := []string{"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
