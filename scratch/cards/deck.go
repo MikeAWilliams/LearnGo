@@ -50,12 +50,12 @@ func newDeckFromFile(filePath string) (deck, error) {
 	return deck(stringArray), nil
 }
 
-func (d deck) shuffle() deck {
+func (d deck) shuffle(randomGen *rand.Rand) deck {
 	result := make(deck, len(d))
 	copy(result, d)
 
 	for index := range result {
-		newIndex := rand.Intn(len(result))
+		newIndex := randomGen.Intn(len(result))
 		result[newIndex], result[index] = result[index], result[newIndex]
 	}
 	return result

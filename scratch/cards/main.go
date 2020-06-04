@@ -2,15 +2,14 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
 )
 
 func main() {
 	cards := newDeck()
-	fmt.Println("cards")
-	cards.print()
 
-	fmt.Println("")
 	fmt.Println("shuffled deck")
-	shuffle := cards.shuffle()
+	shuffle := cards.shuffle(rand.New(rand.NewSource(time.Now().UnixNano())))
 	shuffle.print()
 }
