@@ -54,8 +54,9 @@ func (d deck) shuffle() deck {
 	result := make(deck, len(d))
 	copy(result, d)
 
-	for _, card := range result {
-		result[rand.Intn(len(result))] = card
+	for index := range result {
+		newIndex := rand.Intn(len(result))
+		result[newIndex], result[index] = result[index], result[newIndex]
 	}
 	return result
 }
