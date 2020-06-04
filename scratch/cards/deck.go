@@ -45,7 +45,6 @@ func newDeckFromFile(filePath string) deck {
 	if nil != err {
 		return deck{}
 	}
-	commaString := string(bytes)
-	stringArray := strings.Split(commaString, ",")
+	stringArray := strings.Split(string(bytes), ",")
 	return deck(stringArray)
 }
