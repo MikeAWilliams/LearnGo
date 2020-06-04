@@ -8,6 +8,7 @@ func uniqueCards(input deck) deck {
 	for _, card := range input {
 		if !foundAlready[card] {
 			result = append(result, card)
+			foundAlready[card] = true
 		}
 	}
 	return result
