@@ -15,4 +15,6 @@ func main() {
 	fmt.Println("")
 	fmt.Println("deck")
 	deck.print()
+
+	fmt.Println(deck.toString())
 }
