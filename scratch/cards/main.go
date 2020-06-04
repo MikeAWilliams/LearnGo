@@ -17,4 +17,11 @@ func main() {
 	deck.print()
 
 	fmt.Println(deck.toString())
+
+	deck.saveToFile("stuff.txt")
+
+	deckFromFile := newDeckFromFile("stuff.txt")
+	fmt.Println("")
+	fmt.Println("loaded deck")
+	deckFromFile.print()
 }
