@@ -3,18 +3,21 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
-func checkPage(url string) {
+func checkPage(url string, c chan string) {
 	resp, err := http.Get(url)
 	if nil != err {
-		fmt.Println("Error reading "+url, err)
+		c <- "Error reading " + url + err.Error()
+		return
 	}
 	defer resp.Body.Close()
 	if 200 != resp.StatusCode {
-		fmt.Println("Error reading "+url+" response was ", resp.StatusCode)
+		c <- "Error reading " + url + " response was " + strconv.Itoa(resp.StatusCode)
+		return
 	}
-	fmt.Println(url + " is ok")
+	c <- url + " is ok"
 }
 
 func main() {
@@ -25,7 +28,9 @@ func main() {
 		"http://amazon.com",
 	}
 
+	c := make(chan string)
 	for _, page := range pages {
-		checkPage(page)
+		go checkPage(page, c)
 	}
+	fmt.Println(<-c)
 }
