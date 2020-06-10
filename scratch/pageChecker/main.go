@@ -32,5 +32,8 @@ func main() {
 	for _, page := range pages {
 		go checkPage(page, c)
 	}
-	fmt.Println(<-c)
+
+	for index := 0; i < len(pages); ++i {
+		fmt.Println(<-c)
+	}
 }
