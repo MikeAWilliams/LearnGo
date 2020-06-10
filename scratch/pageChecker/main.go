@@ -33,7 +33,7 @@ func main() {
 		go checkPage(page, c)
 	}
 
-	for index := 0; i < len(pages); ++i {
+	for index := 0; index < len(pages); index++ {
 		fmt.Println(<-c)
 	}
 }
