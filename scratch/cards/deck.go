@@ -14,8 +14,8 @@ func deal(d deck, handSize int) (deck, deck) {
 }
 
 func newDeck() deck {
-	suits := []string{"Spades", "Clubs", "Hearts", "Diamonds"}
-	values := []string{"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
+	suits := [4]string{"Spades", "Clubs", "Hearts", "Diamonds"}
+	values := [13]string{"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
 
 	result := deck{}
 
