@@ -5,5 +5,6 @@ import (
 )
 
 func main() {
-	busineslogic.PrintHelloWorld()
+	toPrint := busineslogic.TodoItem{"The thing", "You better get this done", false}
+	busineslogic.PrintTodoItem(toPrint)
 }
