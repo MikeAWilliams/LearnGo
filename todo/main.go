@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"github.com/MikeAWilliams/LearnGo/tree/master/todo/busineslogic"
 )
 
 func main() {
-	fmt.Print("Hello World!")
+	busineslogic.PrintHelloWorld()
 }

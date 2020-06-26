@@ -1,4 +1,4 @@
-package businesslogic
+package busineslogic
 
 import "fmt"
 
