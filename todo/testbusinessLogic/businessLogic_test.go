@@ -4,6 +4,8 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/MikeAWilliams/LearnGo/tree/master/todo/busineslogic"
 )
 
@@ -33,11 +35,6 @@ func TestMySpy_AddItem(t *testing.T) {
 	spy := dbSpy{}
 	toAdd := busineslogic.TodoItem{"title", "description", false}
 	addWorked, added := spy.AddItem(toAdd)
-	if !addWorked {
-		t.Errorf("addWorked was false")
-	}
-
-	if toAdd != added {
-		t.Errorf("toAdd != added\ntoAdd %v added %v", toAdd, added)
-	}
+	require.True(t, addWorked)
+	require.Equal(t, toAdd, added)
 }
