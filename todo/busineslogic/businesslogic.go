@@ -42,6 +42,10 @@ func AddItem(title string, description string, db Database) (bool, TodoItem, err
 	return true, toAdd, nil
 }
 
+func GetAllItems(db Database) ([]TodoItem, error) {
+	return db.GetAllItems()
+}
+
 func PrintTodoItem(item TodoItem) {
 	fmt.Print(item)
 }
