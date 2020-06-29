@@ -72,7 +72,7 @@ type dbErr struct {
 
 func (db *dbErr) GetItem(title string) (busineslogic.TodoItem, error) {
 	db.methodCalls++
-	return busineslogic.TodoItem{}, db.getItemErr
+	return busineslogic.TodoItem{title, "item desc", false}, db.getItemErr
 }
 
 func (db *dbErr) HasItem(title string) (bool, error) {

@@ -1,6 +1,9 @@
 package busineslogic
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type TodoItem struct {
 	Title       string
@@ -44,6 +47,17 @@ func AddItem(title string, description string, db Database) (bool, TodoItem, err
 
 func GetAllItems(db Database) ([]TodoItem, error) {
 	return db.GetAllItems()
+}
+
+func GetItem(title string, db Database) (TodoItem, error) {
+	hasItem, err := db.HasItem(title)
+	if nil != err {
+		return TodoItem{}, err
+	}
+	if hasItem {
+		return db.GetItem(title)
+	}
+	return TodoItem{}, errors.New("The item is not in the database")
 }
 
 func PrintTodoItem(item TodoItem) {
