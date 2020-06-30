@@ -39,6 +39,10 @@ func (db *dbDouble) AddItem(item busineslogic.TodoItem) error {
 	return nil
 }
 
+func (db *dbDouble) UpdateItem(item busineslogic.TodoItem) error {
+	return errors.New("Not implemented")
+}
+
 func TestBusinessLogic_AddItem_ItemNotInDB(t *testing.T) {
 	db := dbDouble{}
 
@@ -63,11 +67,12 @@ func TestBusinessLogic_AddItem_ItemInDB(t *testing.T) {
 }
 
 type dbErr struct {
-	methodCalls int
-	hasItemErr  error
-	getItemErr  error
-	addItemErr  error
-	hasItem     bool
+	methodCalls   int
+	hasItemErr    error
+	getItemErr    error
+	addItemErr    error
+	updateItemErr error
+	hasItem       bool
 }
 
 func (db *dbErr) GetItem(title string) (busineslogic.TodoItem, error) {
@@ -90,8 +95,13 @@ func (db *dbErr) AddItem(item busineslogic.TodoItem) error {
 	return db.addItemErr
 }
 
+func (db *dbErr) UpdateItem(item busineslogic.TodoItem) error {
+	db.methodCalls++
+	return db.updateItemErr
+}
+
 func TestBusinessLogic_AddItem_HasItemIsError(t *testing.T) {
-	db := dbErr{0, errors.New("Error"), nil, nil, false}
+	db := dbErr{0, errors.New("Error"), nil, nil, nil, false}
 
 	wasAdded, _, err := busineslogic.AddItem("Laundry", "Clean laundry", &db)
 	require.Equal(t, db.hasItemErr, err)
@@ -100,7 +110,7 @@ func TestBusinessLogic_AddItem_HasItemIsError(t *testing.T) {
 }
 
 func TestBusinessLogic_AddItem_GetItemIsError(t *testing.T) {
-	db := dbErr{0, nil, errors.New("Error"), nil, true}
+	db := dbErr{0, nil, errors.New("Error"), nil, nil, true}
 
 	wasAdded, _, err := busineslogic.AddItem("Laundry", "Clean laundry", &db)
 	require.Equal(t, db.getItemErr, err)
@@ -109,7 +119,7 @@ func TestBusinessLogic_AddItem_GetItemIsError(t *testing.T) {
 }
 
 func TestBusinessLogic_AddItem_AddItemIsError(t *testing.T) {
-	db := dbErr{0, nil, nil, errors.New("Error"), false}
+	db := dbErr{0, nil, nil, errors.New("Error"), nil, false}
 
 	wasAdded, _, err := busineslogic.AddItem("Laundry", "Clean laundry", &db)
 	require.Equal(t, db.addItemErr, err)

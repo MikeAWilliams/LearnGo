@@ -20,6 +20,7 @@ type Database interface {
 	HasItem(title string) (bool, error)
 	GetAllItems() ([]TodoItem, error)
 	AddItem(item TodoItem) error
+	UpdateItem(item TodoItem) error
 }
 
 func AddItem(title string, description string, db Database) (bool, TodoItem, error) {
@@ -56,6 +57,25 @@ func GetItem(title string, db Database) (TodoItem, error) {
 	}
 	if hasItem {
 		return db.GetItem(title)
+	}
+	return TodoItem{}, errors.New("The item is not in the database")
+}
+
+func UpdateItem(item TodoItem, db Database) (TodoItem, error) {
+	hasItem, err := db.HasItem(item.Title)
+	if nil != err {
+		return TodoItem{}, err
+	}
+	if hasItem {
+		oldItem, oldErr := db.GetItem(item.Title)
+		if nil != oldErr {
+			return TodoItem{}, oldErr
+		}
+		updateErr := db.UpdateItem(item)
+		if nil != updateErr {
+			return TodoItem{}, updateErr
+		}
+		return oldItem, nil
 	}
 	return TodoItem{}, errors.New("The item is not in the database")
 }
