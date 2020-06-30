@@ -9,7 +9,7 @@ import (
 )
 
 func TestBusinessLogic_GetItem_ItemInDb(t *testing.T) {
-	db := dbErr{0, nil, nil, nil, nil, true}
+	db := dbErr{0, nil, nil, nil, nil, nil, true}
 
 	item, err := busineslogic.GetItem("testItem", &db)
 	require.Nil(t, err)
@@ -18,7 +18,7 @@ func TestBusinessLogic_GetItem_ItemInDb(t *testing.T) {
 }
 
 func TestBusinessLogic_GetItem_ItemNotInDb(t *testing.T) {
-	db := dbErr{0, nil, nil, nil, nil, false}
+	db := dbErr{0, nil, nil, nil, nil, nil, false}
 
 	_, err := busineslogic.GetItem("testItem", &db)
 	require.NotNil(t, err)
@@ -26,7 +26,7 @@ func TestBusinessLogic_GetItem_ItemNotInDb(t *testing.T) {
 }
 
 func TestBusinessLogic_GetItem_HasItemReturnsError(t *testing.T) {
-	db := dbErr{0, errors.New("bad has item"), nil, nil, nil, false}
+	db := dbErr{0, errors.New("bad has item"), nil, nil, nil, nil, false}
 
 	_, err := busineslogic.GetItem("testItem", &db)
 	require.NotNil(t, err)
@@ -34,7 +34,7 @@ func TestBusinessLogic_GetItem_HasItemReturnsError(t *testing.T) {
 }
 
 func TestBusinessLogic_GetItem_GetItemReturnsError(t *testing.T) {
-	db := dbErr{0, nil, errors.New("can't get item"), nil, nil, true}
+	db := dbErr{0, nil, errors.New("can't get item"), nil, nil, nil, true}
 
 	_, err := busineslogic.GetItem("testItem", &db)
 	require.NotNil(t, err)

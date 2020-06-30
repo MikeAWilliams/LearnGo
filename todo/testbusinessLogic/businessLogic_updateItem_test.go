@@ -9,7 +9,7 @@ import (
 )
 
 func TestBusinessLogic_UpdateItem_ItemInDb(t *testing.T) {
-	db := dbErr{0, nil, nil, nil, nil, true}
+	db := dbErr{0, nil, nil, nil, nil, nil, true}
 
 	newItem := busineslogic.TodoItem{"LearnGo", "write some code", true}
 	item, err := busineslogic.UpdateItem(newItem, &db)
@@ -19,7 +19,7 @@ func TestBusinessLogic_UpdateItem_ItemInDb(t *testing.T) {
 }
 
 func TestBusinessLogic_UpdateItem_ItemNotInDb(t *testing.T) {
-	db := dbErr{0, nil, nil, nil, nil, false}
+	db := dbErr{0, nil, nil, nil, nil, nil, false}
 
 	newItem := busineslogic.TodoItem{"LearnGo", "write some code", true}
 	_, err := busineslogic.UpdateItem(newItem, &db)
@@ -28,7 +28,7 @@ func TestBusinessLogic_UpdateItem_ItemNotInDb(t *testing.T) {
 }
 
 func TestBusinessLogic_UpdateItem_HasItemErr(t *testing.T) {
-	db := dbErr{0, errors.New("Error"), nil, nil, nil, true}
+	db := dbErr{0, errors.New("Error"), nil, nil, nil, nil, true}
 
 	newItem := busineslogic.TodoItem{"LearnGo", "write some code", true}
 	_, err := busineslogic.UpdateItem(newItem, &db)
@@ -37,7 +37,7 @@ func TestBusinessLogic_UpdateItem_HasItemErr(t *testing.T) {
 }
 
 func TestBusinessLogic_UpdateItem_GetItemErr(t *testing.T) {
-	db := dbErr{0, nil, errors.New("Error"), nil, nil, true}
+	db := dbErr{0, nil, errors.New("Error"), nil, nil, nil, true}
 
 	newItem := busineslogic.TodoItem{"LearnGo", "write some code", true}
 	_, err := busineslogic.UpdateItem(newItem, &db)
@@ -46,7 +46,7 @@ func TestBusinessLogic_UpdateItem_GetItemErr(t *testing.T) {
 }
 
 func TestBusinessLogic_UpdateItem_UpdateItemErr(t *testing.T) {
-	db := dbErr{0, nil, nil, nil, errors.New("error"), true}
+	db := dbErr{0, nil, nil, nil, errors.New("error"), nil, true}
 
 	newItem := busineslogic.TodoItem{"LearnGo", "write some code", true}
 	_, err := busineslogic.UpdateItem(newItem, &db)
