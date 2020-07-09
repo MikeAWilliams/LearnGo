@@ -52,3 +52,20 @@ func TestMemoryDB_HasItem(t *testing.T) {
 	require.Nil(t, err2)
 	require.True(t, isThere2)
 }
+
+func TestMemoryDB_GetAllItems(t *testing.T) {
+	testObject := memorydb.MemoryDB{}
+
+	expectEmpty, err1 := testObject.GetAllItems()
+	require.Nil(t, err1)
+	require.Equal(t, 0, len(expectEmpty))
+
+	toAdd1 := busineslogic.TodoItem{"testItem", "the best item", false}
+	testObject.AddItem(toAdd1)
+	toAdd2 := busineslogic.TodoItem{"testItem 2", "the second best item", false}
+	testObject.AddItem(toAdd2)
+
+	expectSize2, err2 := testObject.GetAllItems()
+	require.Nil(t, err2)
+	require.Equal(t, 2, len(expectSize2))
+}

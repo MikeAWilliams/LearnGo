@@ -30,7 +30,9 @@ func (db *MemoryDB) HasItem(title string) (bool, error) {
 }
 
 func (db *MemoryDB) GetAllItems() ([]busineslogic.TodoItem, error) {
-	return []busineslogic.TodoItem{}, errors.New("not implemented")
+	result := make([]busineslogic.TodoItem, len(db.items))
+	copy(result, db.items)
+	return result, nil
 }
 
 func (db *MemoryDB) AddItem(item busineslogic.TodoItem) error {
