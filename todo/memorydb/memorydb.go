@@ -55,7 +55,13 @@ func (db *MemoryDB) UpdateItem(item busineslogic.TodoItem) error {
 }
 
 func (db *MemoryDB) DeleteItem(title string) error {
-	return errors.New("not implemented")
+	indexToRemove := db.GetItemIndex(title)
+	if -1 == indexToRemove {
+		return errors.New(fmt.Sprintf("Item with title %v not in db", title))
+	}
+	db.items[indexToRemove] = db.items[len(db.items)-1]
+	db.items = db.items[:len(db.items)-1]
+	return nil
 }
 
 // Helper functions
@@ -67,4 +73,13 @@ func (db *MemoryDB) FindItem(title string) *busineslogic.TodoItem {
 		}
 	}
 	return nil
+}
+
+func (db *MemoryDB) GetItemIndex(title string) int {
+	for index := range db.items {
+		if db.items[index].Title == title {
+			return index
+		}
+	}
+	return -1
 }

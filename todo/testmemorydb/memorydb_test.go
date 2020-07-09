@@ -88,3 +88,25 @@ func TestMemoryDB_UpdateItem(t *testing.T) {
 	require.Equal(t, testItem.Description, resultItem.Description)
 	require.Equal(t, testItem.Complete, resultItem.Complete)
 }
+
+func TestMemoryDB_DeleteItem_NotThere(t *testing.T) {
+	testObject := memorydb.MemoryDB{}
+
+	errNotThere := testObject.DeleteItem("not in there")
+	require.NotNil(t, errNotThere)
+}
+
+func TestMemoryDB_DeleteItem_SingleItem(t *testing.T) {
+	testObject := memorydb.MemoryDB{}
+
+	testItem := busineslogic.TodoItem{"testItem", "the best item", false}
+	testObject.AddItem(testItem)
+	isThere, _ := testObject.HasItem(testItem.Title)
+	require.True(t, isThere)
+
+	errorShouldBeNil := testObject.DeleteItem(testItem.Title)
+	require.Nil(t, errorShouldBeNil)
+
+	isThereNow, _ := testObject.HasItem(testItem.Title)
+	require.False(t, isThereNow)
+}
