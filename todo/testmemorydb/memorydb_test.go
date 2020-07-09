@@ -30,3 +30,10 @@ func TestMemoryDB_AddItem_multipleAdd(t *testing.T) {
 	add_err2 := testObject.AddItem(toAdd)
 	require.NotEqual(t, nil, add_err2)
 }
+
+func TestMemoryDB_GetItem_noAdd(t *testing.T) {
+	testObject := memorydb.MemoryDB{}
+
+	_, err := testObject.GetItem("not in there")
+	require.NotEqual(t, nil, err)
+}
