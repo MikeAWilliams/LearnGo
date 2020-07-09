@@ -9,7 +9,7 @@ import (
 	"github.com/MikeAWilliams/LearnGo/tree/master/todo/memorydb"
 )
 
-func TestMemoryDB_AddItem_GetItem(t *testing.T) {
+func TestMemoryDB_AddItemGetItem_noError(t *testing.T) {
 	testObject := memorydb.MemoryDB{}
 	toAdd := busineslogic.TodoItem{"testItem", "the best item", false}
 
@@ -19,4 +19,14 @@ func TestMemoryDB_AddItem_GetItem(t *testing.T) {
 	resultItem, err := testObject.GetItem("testItem")
 	require.Equal(t, nil, err)
 	require.Equal(t, toAdd, resultItem)
+}
+
+func TestMemoryDB_AddItem_multipleAdd(t *testing.T) {
+	testObject := memorydb.MemoryDB{}
+	toAdd := busineslogic.TodoItem{"testItem", "the best item", false}
+
+	add_err1 := testObject.AddItem(toAdd)
+	require.Equal(t, nil, add_err1)
+	add_err2 := testObject.AddItem(toAdd)
+	require.NotEqual(t, nil, add_err2)
 }
