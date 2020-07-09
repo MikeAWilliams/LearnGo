@@ -45,7 +45,13 @@ func (db *MemoryDB) AddItem(item busineslogic.TodoItem) error {
 }
 
 func (db *MemoryDB) UpdateItem(item busineslogic.TodoItem) error {
-	return errors.New("not implemented")
+	findPtr := db.FindItem(item.Title)
+	if nil == findPtr {
+		return errors.New("item not in db")
+	}
+	findPtr.Complete = item.Complete
+	findPtr.Description = item.Description
+	return nil
 }
 
 func (db *MemoryDB) DeleteItem(title string) error {
@@ -55,9 +61,9 @@ func (db *MemoryDB) DeleteItem(title string) error {
 // Helper functions
 
 func (db *MemoryDB) FindItem(title string) *busineslogic.TodoItem {
-	for _, item := range db.items {
-		if item.Title == title {
-			return &item
+	for index := range db.items {
+		if db.items[index].Title == title {
+			return &db.items[index]
 		}
 	}
 	return nil

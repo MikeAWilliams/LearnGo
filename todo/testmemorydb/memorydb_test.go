@@ -69,3 +69,22 @@ func TestMemoryDB_GetAllItems(t *testing.T) {
 	require.Nil(t, err2)
 	require.Equal(t, 2, len(expectSize2))
 }
+
+func TestMemoryDB_UpdateItem(t *testing.T) {
+	testObject := memorydb.MemoryDB{}
+
+	testItem := busineslogic.TodoItem{"testItem", "the best item", false}
+	errNotThere := testObject.UpdateItem(testItem)
+	require.NotNil(t, errNotThere)
+
+	testObject.AddItem(testItem)
+
+	testItem.Description = "not as good as I though"
+	testItem.Complete = true
+	shouldBeNil := testObject.UpdateItem(testItem)
+	require.Nil(t, shouldBeNil)
+
+	resultItem, _ := testObject.GetItem(testItem.Title)
+	require.Equal(t, testItem.Description, resultItem.Description)
+	require.Equal(t, testItem.Complete, resultItem.Complete)
+}
