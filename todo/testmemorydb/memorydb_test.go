@@ -110,3 +110,66 @@ func TestMemoryDB_DeleteItem_SingleItem(t *testing.T) {
 	isThereNow, _ := testObject.HasItem(testItem.Title)
 	require.False(t, isThereNow)
 }
+
+func TestMemoryDB_DeleteItem_FirstItem(t *testing.T) {
+	testObject := memorydb.MemoryDB{}
+
+	item1 := busineslogic.TodoItem{"testItem1", "the best item", false}
+	testObject.AddItem(item1)
+	item2 := busineslogic.TodoItem{"testItem2", "the best item", false}
+	testObject.AddItem(item2)
+	item3 := busineslogic.TodoItem{"testItem3", "the best item", false}
+	testObject.AddItem(item3)
+
+	errorShouldBeNil := testObject.DeleteItem(item1.Title)
+	require.Nil(t, errorShouldBeNil)
+
+	item1IsHere, _ := testObject.HasItem(item1.Title)
+	require.False(t, item1IsHere)
+	item2IsHere, _ := testObject.HasItem(item2.Title)
+	require.True(t, item2IsHere)
+	item3IsHere, _ := testObject.HasItem(item3.Title)
+	require.True(t, item3IsHere)
+}
+
+func TestMemoryDB_DeleteItem_SecondItem(t *testing.T) {
+	testObject := memorydb.MemoryDB{}
+
+	item1 := busineslogic.TodoItem{"testItem1", "the best item", false}
+	testObject.AddItem(item1)
+	item2 := busineslogic.TodoItem{"testItem2", "the best item", false}
+	testObject.AddItem(item2)
+	item3 := busineslogic.TodoItem{"testItem3", "the best item", false}
+	testObject.AddItem(item3)
+
+	errorShouldBeNil := testObject.DeleteItem(item2.Title)
+	require.Nil(t, errorShouldBeNil)
+
+	item1IsHere, _ := testObject.HasItem(item1.Title)
+	require.True(t, item1IsHere)
+	item2IsHere, _ := testObject.HasItem(item2.Title)
+	require.False(t, item2IsHere)
+	item3IsHere, _ := testObject.HasItem(item3.Title)
+	require.True(t, item3IsHere)
+}
+
+func TestMemoryDB_DeleteItem_LastItem(t *testing.T) {
+	testObject := memorydb.MemoryDB{}
+
+	item1 := busineslogic.TodoItem{"testItem1", "the best item", false}
+	testObject.AddItem(item1)
+	item2 := busineslogic.TodoItem{"testItem2", "the best item", false}
+	testObject.AddItem(item2)
+	item3 := busineslogic.TodoItem{"testItem3", "the best item", false}
+	testObject.AddItem(item3)
+
+	errorShouldBeNil := testObject.DeleteItem(item3.Title)
+	require.Nil(t, errorShouldBeNil)
+
+	item1IsHere, _ := testObject.HasItem(item1.Title)
+	require.True(t, item1IsHere)
+	item2IsHere, _ := testObject.HasItem(item2.Title)
+	require.True(t, item2IsHere)
+	item3IsHere, _ := testObject.HasItem(item3.Title)
+	require.False(t, item3IsHere)
+}
