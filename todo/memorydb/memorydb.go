@@ -21,6 +21,18 @@ func (db *MemoryDB) GetItem(title string) (busineslogic.TodoItem, error) {
 	return *resultPtr, nil
 }
 
+func (db *MemoryDB) HasItem(title string) (bool, error) {
+	resultPtr := db.FindItem(title)
+	if nil == resultPtr {
+		return false, nil
+	}
+	return true, nil
+}
+
+func (db *MemoryDB) GetAllItems() ([]busineslogic.TodoItem, error) {
+	return []busineslogic.TodoItem{}, errors.New("not implemented")
+}
+
 func (db *MemoryDB) AddItem(item busineslogic.TodoItem) error {
 	existingItem := db.FindItem(item.Title)
 	if nil != existingItem {
@@ -28,6 +40,14 @@ func (db *MemoryDB) AddItem(item busineslogic.TodoItem) error {
 	}
 	db.items = append(db.items, item)
 	return nil
+}
+
+func (db *MemoryDB) UpdateItem(item busineslogic.TodoItem) error {
+	return errors.New("not implemented")
+}
+
+func (db *MemoryDB) DeleteItem(title string) error {
+	return errors.New("not implemented")
 }
 
 // Helper functions

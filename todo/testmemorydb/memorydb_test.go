@@ -14,10 +14,10 @@ func TestMemoryDB_AddItemGetItem_noError(t *testing.T) {
 	toAdd := busineslogic.TodoItem{"testItem", "the best item", false}
 
 	add_err := testObject.AddItem(toAdd)
-	require.Equal(t, nil, add_err)
+	require.Nil(t, add_err)
 
 	resultItem, err := testObject.GetItem("testItem")
-	require.Equal(t, nil, err)
+	require.Nil(t, err)
 	require.Equal(t, toAdd, resultItem)
 }
 
@@ -26,14 +26,29 @@ func TestMemoryDB_AddItem_multipleAdd(t *testing.T) {
 	toAdd := busineslogic.TodoItem{"testItem", "the best item", false}
 
 	add_err1 := testObject.AddItem(toAdd)
-	require.Equal(t, nil, add_err1)
+	require.Nil(t, add_err1)
 	add_err2 := testObject.AddItem(toAdd)
-	require.NotEqual(t, nil, add_err2)
+	require.NotNil(t, add_err2)
 }
 
 func TestMemoryDB_GetItem_noAdd(t *testing.T) {
 	testObject := memorydb.MemoryDB{}
 
 	_, err := testObject.GetItem("not in there")
-	require.NotEqual(t, nil, err)
+	require.NotNil(t, err)
+}
+
+func TestMemoryDB_HasItem(t *testing.T) {
+	testObject := memorydb.MemoryDB{}
+
+	isThere1, err1 := testObject.HasItem("not in there")
+	require.Nil(t, err1)
+	require.False(t, isThere1)
+
+	toAdd := busineslogic.TodoItem{"testItem", "the best item", false}
+	testObject.AddItem(toAdd)
+
+	isThere2, err2 := testObject.HasItem(toAdd.Title)
+	require.Nil(t, err2)
+	require.True(t, isThere2)
 }
