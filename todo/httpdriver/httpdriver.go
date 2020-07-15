@@ -17,6 +17,7 @@ func getGetItemsHandler(db busineslogic.Database) func(http.ResponseWriter, *htt
 		items, err := busineslogic.GetAllItems(db)
 		if nil != err {
 			w.Write([]byte(err.Error()))
+			return
 		}
 
 		result := ""
@@ -34,6 +35,7 @@ func getGetSpecificItemHandler(db busineslogic.Database) func(http.ResponseWrite
 		item, err := busineslogic.GetItem(title, db)
 		if nil != err {
 			w.Write([]byte(err.Error()))
+			return
 		}
 
 		result := item.String() + "\n"
