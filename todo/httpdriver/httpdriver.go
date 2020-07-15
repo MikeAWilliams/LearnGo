@@ -57,7 +57,6 @@ func getPostSpecificItemHandler(db busineslogic.Database) func(http.ResponseWrit
 		vars := mux.Vars(r)
 		title := vars["title"]
 		var body postItemBody
-		body.Description = "not set"
 		bodyError := json.NewDecoder(r.Body).Decode(&body)
 		if errorWasHandled(w, bodyError) {
 			return
@@ -76,6 +75,39 @@ func getPostSpecificItemHandler(db busineslogic.Database) func(http.ResponseWrit
 	}
 }
 
+type putItemBody struct {
+	Description string
+	Complete    bool
+}
+
+type putItemResponseBody struct {
+	Old busineslogic.TodoItem
+	New busineslogic.TodoItem
+}
+
+func getPutSpecificItemHandler(db busineslogic.Database) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		title := vars["title"]
+		var body putItemBody
+		bodyError := json.NewDecoder(r.Body).Decode(&body)
+		if errorWasHandled(w, bodyError) {
+			return
+		}
+
+		newItem := busineslogic.TodoItem{title, body.Description, body.Complete}
+		oldItem, err := busineslogic.UpdateItem(newItem, db)
+		if errorWasHandled(w, err) {
+			return
+		}
+
+		responseBody := putItemResponseBody{oldItem, newItem}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(responseBody)
+	}
+}
+
 func Start(db busineslogic.Database) {
 	r := mux.NewRouter()
 	// Routes consist of a path and a handler function.
@@ -83,6 +115,7 @@ func Start(db busineslogic.Database) {
 	r.HandleFunc("/api/v1/items", getGetItemsHandler(db)).Methods("GET")
 	r.HandleFunc("/api/v1/items/{title}", getGetSpecificItemHandler(db)).Methods("GET")
 	r.HandleFunc("/api/v1/items/{title}", getPostSpecificItemHandler(db)).Methods("POST")
+	r.HandleFunc("/api/v1/items/{title}", getPutSpecificItemHandler(db)).Methods("PUT")
 
 	// Bind to a port and pass our router in
 	log.Fatal(http.ListenAndServe(":8000", r))
