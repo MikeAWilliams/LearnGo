@@ -1,6 +1,7 @@
 package httpdriver
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -20,11 +21,13 @@ func getGetItemsHandler(db busineslogic.Database) func(http.ResponseWriter, *htt
 			return
 		}
 
-		result := ""
-		for _, item := range items {
-			result += item.String() + "\n"
-		}
-		w.Write([]byte(result))
+		//result := ""
+		//for _, item := range items {
+		//result += item.String() + "\n"
+		//}
+		//w.Write([]byte(result))
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(items)
 	}
 }
 
@@ -38,8 +41,8 @@ func getGetSpecificItemHandler(db busineslogic.Database) func(http.ResponseWrite
 			return
 		}
 
-		result := item.String() + "\n"
-		w.Write([]byte(result))
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(item)
 	}
 }
 
