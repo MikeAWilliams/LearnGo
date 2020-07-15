@@ -120,13 +120,11 @@ func getDeleteSpecificItemHandler(db busineslogic.Database) func(http.ResponseWr
 
 func Start(db busineslogic.Database) {
 	r := mux.NewRouter()
-	// Routes consist of a path and a handler function.
 	r.HandleFunc("/api/v1/items", getGetItemsHandler(db)).Methods("GET")
 	r.HandleFunc("/api/v1/items/{title}", getGetSpecificItemHandler(db)).Methods("GET")
 	r.HandleFunc("/api/v1/items/{title}", getPostSpecificItemHandler(db)).Methods("POST")
 	r.HandleFunc("/api/v1/items/{title}", getPutSpecificItemHandler(db)).Methods("PUT")
 	r.HandleFunc("/api/v1/items/{title}", getDeleteSpecificItemHandler(db)).Methods("DELETE")
 
-	// Bind to a port and pass our router in
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
