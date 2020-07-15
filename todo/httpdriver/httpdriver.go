@@ -39,7 +39,7 @@ func getGetSpecificItemHandler(db busineslogic.Database) func(http.ResponseWrite
 		vars := mux.Vars(r)
 		title := vars["title"]
 		item, err := busineslogic.GetItem(title, db)
-		if !errorWasHandled(w, err) {
+		if errorWasHandled(w, err) {
 			return
 		}
 
