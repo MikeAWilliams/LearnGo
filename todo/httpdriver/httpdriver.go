@@ -9,6 +9,15 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func errorWasHandled(w http.ResponseWriter, err error) bool {
+	if nil != err {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte(err.Error()))
+		return true
+	}
+	return false
+}
+
 func getSlashHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Gorilla!\n"))
 }
@@ -16,9 +25,7 @@ func getSlashHandler(w http.ResponseWriter, r *http.Request) {
 func getGetItemsHandler(db busineslogic.Database) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		items, err := busineslogic.GetAllItems(db)
-		if nil != err {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte(err.Error()))
+		if errorWasHandled(w, err) {
 			return
 		}
 
@@ -32,9 +39,7 @@ func getGetSpecificItemHandler(db busineslogic.Database) func(http.ResponseWrite
 		vars := mux.Vars(r)
 		title := vars["title"]
 		item, err := busineslogic.GetItem(title, db)
-		if nil != err {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte(err.Error()))
+		if !errorWasHandled(w, err) {
 			return
 		}
 
