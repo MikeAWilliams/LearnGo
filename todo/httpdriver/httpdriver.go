@@ -17,15 +17,11 @@ func getGetItemsHandler(db busineslogic.Database) func(http.ResponseWriter, *htt
 	return func(w http.ResponseWriter, r *http.Request) {
 		items, err := busineslogic.GetAllItems(db)
 		if nil != err {
+			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte(err.Error()))
 			return
 		}
 
-		//result := ""
-		//for _, item := range items {
-		//result += item.String() + "\n"
-		//}
-		//w.Write([]byte(result))
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(items)
 	}
@@ -37,6 +33,7 @@ func getGetSpecificItemHandler(db busineslogic.Database) func(http.ResponseWrite
 		title := vars["title"]
 		item, err := busineslogic.GetItem(title, db)
 		if nil != err {
+			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte(err.Error()))
 			return
 		}
