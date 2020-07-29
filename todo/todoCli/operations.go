@@ -22,7 +22,12 @@ func printHttpResponse(resp *http.Response) {
 	if dealWithError(err) {
 		return
 	}
-	fmt.Println(string(body))
+	pretty := &bytes.Buffer{}
+	indentErr := json.Indent(pretty, body, "", "  ")
+	if dealWithError(indentErr) {
+		return
+	}
+	fmt.Println(pretty.String())
 }
 
 func getURI(title string) string {
