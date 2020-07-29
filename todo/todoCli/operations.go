@@ -105,4 +105,17 @@ func performPut(argv argT) {
 func performDelete(argv argT) {
 	uri := getURI(argv.Title)
 	fmt.Printf("Doing the delete on %v\n", uri)
+
+	req, err := http.NewRequest(http.MethodDelete, uri, nil)
+	if dealWithError(err) {
+		return
+	}
+
+	client := &http.Client{}
+	resp, respErr := client.Do(req)
+	if dealWithError(respErr) {
+		return
+	}
+
+	printHttpResponse(resp)
 }
