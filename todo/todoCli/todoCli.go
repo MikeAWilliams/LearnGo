@@ -1,8 +1,6 @@
 package main
 
 import (
-	"errors"
-	"fmt"
 	"os"
 
 	"github.com/mkideal/cli"
@@ -18,67 +16,6 @@ type argT struct {
 	Title       string `cli:"t,title" usage:"the title of the item in question"`
 	Description string `cli:"e,description" usage:"the description of the item in question"`
 	Complete    bool   `cli:"c,complete" usage:"the complete status of the item in question"`
-}
-
-const (
-	GET     = 1
-	POST    = 2
-	PUT     = 3
-	DELETE  = 4
-	UNKNOWN = 5
-)
-
-func validateOperationExclusive(ctx *cli.Context) error {
-	opCount := 0
-	argv := ctx.Argv().(*argT)
-	if argv.Get {
-		opCount++
-	}
-	if argv.Post {
-		opCount++
-	}
-	if argv.Put {
-		opCount++
-	}
-	if argv.Delete {
-		opCount++
-	}
-	if opCount == 1 {
-		return nil
-	}
-	return errors.New("Exactly one operation is required")
-}
-
-func getOperation(argv argT) int {
-	if argv.Get {
-		return GET
-	}
-	if argv.Post {
-		return POST
-	}
-	if argv.Put {
-		return PUT
-	}
-	if argv.Delete {
-		return DELETE
-	}
-	return UNKNOWN
-}
-
-func performGet(argv argT) {
-	fmt.Printf("Doing the get")
-}
-
-func performPost(argv argT) {
-	fmt.Printf("Doing the Post")
-}
-
-func performPut(argv argT) {
-	fmt.Printf("Doing the Put")
-}
-
-func performDelete(argv argT) {
-	fmt.Printf("Doing the Delete")
 }
 
 func performOperation(argv argT) {
