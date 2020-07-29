@@ -22,11 +22,14 @@ func printHttpResponse(resp *http.Response) {
 	if dealWithError(err) {
 		return
 	}
+
 	pretty := &bytes.Buffer{}
 	indentErr := json.Indent(pretty, body, "", "  ")
 	if dealWithError(indentErr) {
+		fmt.Printf("Body %v\n", string(body))
 		return
 	}
+
 	fmt.Println(pretty.String())
 }
 
@@ -68,9 +71,35 @@ func performPost(argv argT) {
 	printHttpResponse(resp)
 }
 
+type putBody struct {
+	Description string
+	Compplete   bool
+}
+
 func performPut(argv argT) {
 	uri := getURI(argv.Title)
 	fmt.Printf("Doing the put on %v\n", uri)
+
+	var body putBody
+	body.Description = argv.Description
+	body.Compplete = argv.Complete
+	bodyJson, marshalErr := json.Marshal(body)
+	if dealWithError(marshalErr) {
+		return
+	}
+
+	req, err := http.NewRequest(http.MethodPut, uri, bytes.NewBuffer(bodyJson))
+	if dealWithError(err) {
+		return
+	}
+
+	client := &http.Client{}
+	resp, respErr := client.Do(req)
+	if dealWithError(respErr) {
+		return
+	}
+
+	printHttpResponse(resp)
 }
 
 func performDelete(argv argT) {
