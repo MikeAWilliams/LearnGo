@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 )
@@ -71,6 +72,21 @@ func performPost(argv argT) {
 	printHttpResponse(resp)
 }
 
+func doNewRequest(method string, uri string, body io.Reader) {
+	req, err := http.NewRequest(method, uri, body)
+	if dealWithError(err) {
+		return
+	}
+
+	client := &http.Client{}
+	resp, respErr := client.Do(req)
+	if dealWithError(respErr) {
+		return
+	}
+
+	printHttpResponse(resp)
+}
+
 type putBody struct {
 	Description string
 	Complete    bool
@@ -87,35 +103,12 @@ func performPut(argv argT) {
 	if dealWithError(marshalErr) {
 		return
 	}
-
-	req, err := http.NewRequest(http.MethodPut, uri, bytes.NewBuffer(bodyJson))
-	if dealWithError(err) {
-		return
-	}
-
-	client := &http.Client{}
-	resp, respErr := client.Do(req)
-	if dealWithError(respErr) {
-		return
-	}
-
-	printHttpResponse(resp)
+	doNewRequest(http.MethodPut, uri, bytes.NewBuffer(bodyJson))
 }
 
 func performDelete(argv argT) {
 	uri := getURI(argv.Title)
 	fmt.Printf("Doing the delete on %v\n", uri)
 
-	req, err := http.NewRequest(http.MethodDelete, uri, nil)
-	if dealWithError(err) {
-		return
-	}
-
-	client := &http.Client{}
-	resp, respErr := client.Do(req)
-	if dealWithError(respErr) {
-		return
-	}
-
-	printHttpResponse(resp)
+	doNewRequest(http.MethodDelete, uri, nil)
 }
