@@ -73,7 +73,7 @@ func performPost(argv argT) {
 
 type putBody struct {
 	Description string
-	Compplete   bool
+	Complete    bool
 }
 
 func performPut(argv argT) {
@@ -82,7 +82,7 @@ func performPut(argv argT) {
 
 	var body putBody
 	body.Description = argv.Description
-	body.Compplete = argv.Complete
+	body.Complete = argv.Complete
 	bodyJson, marshalErr := json.Marshal(body)
 	if dealWithError(marshalErr) {
 		return
