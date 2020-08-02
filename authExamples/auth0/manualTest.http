@@ -1,0 +1,22 @@
+#  status
+GET http://localhost:8080/status
+Content-Type: application/json
+
+{ }
+
+### 
+# products
+GET http://localhost:8080/products
+Content-Type: application/json
+
+{ }
+
+### 
+# feedback
+POST http://localhost:8080/products/slug/feedback
+Content-Type: application/json
+
+{
+   "email":"mwilliams@alteryx.com", 
+   "keys":["3eac-1020-a7d6-484a-abd5-bd53-01a9-a676"]
+}
