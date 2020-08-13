@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -16,9 +17,15 @@ func main() {
 
 	// apis
 	r.Handle("/status", StatusHandler).Methods("GET")
-	r.Handle("/products", ProductsHandler).Methods("GET")
-	r.Handle("/products/{slug}/feedback", AddFeedbackHandler).Methods("POST")
+	r.Handle("/products", jwtMiddleware.Handler(ProductsHandler)).Methods("GET")
+	r.Handle("/products/{slug}/feedback", jwtMiddleware.Handler(AddFeedbackHandler)).Methods("POST")
+
+	// For dev only - Set up CORS so React client can consume our API
+	corsWrapper := cors.New(cors.Options{
+		AllowedMethods: []string{"GET", "POST"},
+		AllowedHeaders: []string{"Content-Type", "Origin", "Accept", "*"},
+	})
 
 	// Our application will run on port 8080. Here we declare the port and pass in our router.
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":8080", corsWrapper.Handler(r))
 }

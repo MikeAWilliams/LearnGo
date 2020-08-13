@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -39,6 +40,8 @@ var ProductsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Reque
 	// Here we are converting the slice of products to JSON
 	payload, _ := json.Marshal(products)
 
+	fmt.Printf("productsHandler payload %v\n", string(payload))
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(payload))
 })
@@ -60,6 +63,7 @@ var AddFeedbackHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Re
 	w.Header().Set("Content-Type", "application/json")
 	if product.Slug != "" {
 		payload, _ := json.Marshal(product)
+		fmt.Printf("AddFeedback payload %v\n", string(payload))
 		w.Write([]byte(payload))
 	} else {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
