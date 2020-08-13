@@ -1,17 +1,21 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 func main() {
 	c1 := make(chan interface{})
 	c2 := make(chan interface{})
 
-	syncChan := make(chan interface{})
+	var wg sync.WaitGroup
+	wg.Add(1)
 
 	const messagesToSend = 1000000
 
 	go func() {
-		<-syncChan
+		wg.Wait()
 		for i := 0; i < messagesToSend; i++ {
 			c1 <- struct{}{}
 		}
@@ -19,7 +23,7 @@ func main() {
 	}()
 
 	go func() {
-		<-syncChan
+		wg.Wait()
 		for i := 0; i < messagesToSend; i++ {
 			c2 <- struct{}{}
 		}
@@ -27,8 +31,7 @@ func main() {
 	}()
 
 	var c1Count, c2Count int
-	syncChan <- struct{}{}
-	syncChan <- struct{}{}
+	wg.Done()
 	for {
 		select {
 		case _, ok := <-c1:
