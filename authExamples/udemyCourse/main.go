@@ -29,14 +29,13 @@ var db *sql.DB
 
 func main() {
 	pgUrl, err := pq.ParseURL(os.Args[1])
-	if err != nil {
-		log.Fatal(err)
-	}
-	db, err = sql.Open("postgres", pgUrl)
+	logFatalErrorOrNothing(err)
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	db, err = sql.Open("postgres", pgUrl)
+	logFatalErrorOrNothing(err)
+
+	err = db.Ping()
+	logFatalErrorOrNothing(err)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/signup", signup).Methods("POST")
@@ -62,4 +61,10 @@ func protectedEndpoint(w http.ResponseWriter, r *http.Request) {
 func TokenVerifyMiddleWare(next http.HandlerFunc) http.HandlerFunc {
 	fmt.Println("TokenVerifyMiddleWare")
 	return nil
+}
+
+func logFatalErrorOrNothing(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }
