@@ -1,1 +1,1 @@
-using elephantsql.com
+using elephantsql.com user-account db. I can get the url for that and pass it as a command line argument
