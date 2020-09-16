@@ -12,7 +12,7 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	const messagesToSend = 1000000
+	const messagesToSend = 10000000
 
 	go func() {
 		wg.Wait()
