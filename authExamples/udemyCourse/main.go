@@ -1,11 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/lib/pq"
 )
 
 type User struct {
@@ -22,7 +25,19 @@ type Error struct {
 	Message string `json:"message"`
 }
 
+var db *sql.DB
+
 func main() {
+	pgUrl, err := pq.ParseURL(os.Args[1])
+	if err != nil {
+		log.Fatal(err)
+	}
+	db, err = sql.Open("postgres", pgUrl)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	r := mux.NewRouter()
 	r.HandleFunc("/signup", signup).Methods("POST")
 	r.HandleFunc("/login", login).Methods("POST")
