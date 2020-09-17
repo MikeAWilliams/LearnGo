@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 
@@ -45,7 +46,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/signup", signup).Methods("POST")
 	r.HandleFunc("/login", login).Methods("POST")
-	r.HandleFunc("/protected", TokenVerifyMiddleWare(protectedEndpoint)).Methods("GEt")
+	r.HandleFunc("/protected", tokenVerifyMiddleWare(protectedEndpoint)).Methods("GEt")
 
 	log.Println("Listening on port 8000...")
 	log.Fatal(http.ListenAndServe(":8000", r))
@@ -153,9 +154,39 @@ func protectedEndpoint(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("ProtectedEndpoint")
 }
 
-func TokenVerifyMiddleWare(next http.HandlerFunc) http.HandlerFunc {
-	fmt.Println("TokenVerifyMiddleWare")
-	return nil
+func tokenVerifyMiddleWare(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		tmpSlice := strings.Split(authHeader, " ")
+
+		if len(tmpSlice) != 2 {
+			respondWithError(w, http.StatusUnauthorized, "authHeader not in expected format")
+			return
+		}
+
+		authToken := tmpSlice[1]
+
+		token, error := jwt.Parse(authToken, func(token *jwt.Token) (interface{}, error) {
+			_, ok := token.Method.(*jwt.SigningMethodHMAC)
+			if !ok {
+				return nil, fmt.Errorf("There was an error")
+			}
+
+			// note here is the secret. don't put this in source control for real system
+			return []byte("secret"), nil
+		})
+
+		if error != nil {
+			respondWithError(w, http.StatusUnauthorized, error.Error())
+			return
+		}
+
+		if !token.Valid {
+			respondWithError(w, http.StatusUnauthorized, "token is not valid")
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 func logFatalErrorOrNothing(err error) {
