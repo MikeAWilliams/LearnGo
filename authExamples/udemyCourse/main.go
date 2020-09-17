@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 
@@ -156,15 +155,7 @@ func protectedEndpoint(w http.ResponseWriter, r *http.Request) {
 
 func tokenVerifyMiddleWare(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
-		tmpSlice := strings.Split(authHeader, " ")
-
-		if len(tmpSlice) != 2 {
-			respondWithError(w, http.StatusUnauthorized, "authHeader not in expected format")
-			return
-		}
-
-		authToken := tmpSlice[1]
+		authToken := r.Header.Get("Authorization")
 
 		token, error := jwt.Parse(authToken, func(token *jwt.Token) (interface{}, error) {
 			_, ok := token.Method.(*jwt.SigningMethodHMAC)

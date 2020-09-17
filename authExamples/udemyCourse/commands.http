@@ -19,3 +19,4 @@ content-type: application/json
 ###
 # protected get
 GET http://localhost:8000/protected HTTP/1.1
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImV4YW1wbGUxQGV4YW1wbGUuY29tIiwiaXNzIjoiY291cnNlIn0.Xuy84cWfptRGXzl0mjKk-DW2cMYzGYUyGxeebvCCUHs
