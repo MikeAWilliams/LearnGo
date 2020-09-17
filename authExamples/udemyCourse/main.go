@@ -55,6 +55,11 @@ func respondWithError(w http.ResponseWriter, status int, errMsg string) {
 	json.NewEncoder(w).Encode(Error{errMsg})
 }
 
+func respondWithJson(w http.ResponseWriter, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(data)
+}
+
 func signup(w http.ResponseWriter, r *http.Request) {
 	var user User
 	json.NewDecoder(r.Body).Decode(&user)
@@ -80,6 +85,7 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "failed to insert into db")
 	}
 	user.Password = ""
+	respondWithJson(w, user)
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
