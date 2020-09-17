@@ -8,6 +8,10 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/davecgh/go-spew/spew"
+
+	"github.com/dgrijalva/jwt-go"
+
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gorilla/mux"
@@ -60,16 +64,41 @@ func respondWithJson(w http.ResponseWriter, data interface{}) {
 	json.NewEncoder(w).Encode(data)
 }
 
-func signup(w http.ResponseWriter, r *http.Request) {
+func decodeUserHttp(r *http.Request) User {
 	var user User
 	json.NewDecoder(r.Body).Decode(&user)
+	return user
+}
 
+func handledBadUser(w http.ResponseWriter, user User) bool {
 	if user.Email == "" {
 		respondWithError(w, http.StatusBadRequest, "The email is missing")
-		return
+		return true
 	}
 	if user.Password == "" {
 		respondWithError(w, http.StatusBadRequest, "The password is missing")
+		return true
+	}
+	return false
+}
+
+func generateToken(user User) (string, error) {
+	// in the production system take this as an environment variable or command line arg
+	const secret = "secret"
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"email": user.Email,
+		"iss":   "course",
+	})
+	tokenString, err := token.SignedString([]byte(secret))
+	if err != nil {
+		return "", err
+	}
+	return tokenString, nil
+}
+
+func signup(w http.ResponseWriter, r *http.Request) {
+	user := decodeUserHttp(r)
+	if handledBadUser(w, user) {
 		return
 	}
 
@@ -89,7 +118,36 @@ func signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("login")
+	user := decodeUserHttp(r)
+	if handledBadUser(w, user) {
+		return
+	}
+
+	incomingPw := user.Password
+
+	row := db.QueryRow("select * from users where email=$1", user.Email)
+	err := row.Scan(&user.ID, &user.Email, &user.Password)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			respondWithError(w, http.StatusBadRequest, "the user does not exist")
+		} else {
+			fmt.Println(err)
+			respondWithError(w, http.StatusInternalServerError, "some problem with the db")
+		}
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(incomingPw))
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Invalid password")
+	}
+
+	token, err := generateToken(user)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "some problem with the token")
+	}
+	spew.Dump(token)
 }
 
 func protectedEndpoint(w http.ResponseWriter, r *http.Request) {
