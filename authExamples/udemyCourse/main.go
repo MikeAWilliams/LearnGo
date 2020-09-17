@@ -45,7 +45,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/signup", signup).Methods("POST")
 	r.HandleFunc("/login", login).Methods("POST")
-	r.HandleFunc("/protected", tokenVerifyMiddleWare(protectedEndpoint)).Methods("GEt")
+	r.HandleFunc("/protected", tokenVerifyMiddleWare(protectedEndpoint)).Methods("GET")
 
 	log.Println("Listening on port 8000...")
 	log.Fatal(http.ListenAndServe(":8000", r))
