@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/davecgh/go-spew/spew"
-
 	"github.com/dgrijalva/jwt-go"
 
 	"golang.org/x/crypto/bcrypt"
@@ -61,6 +59,7 @@ func respondWithError(w http.ResponseWriter, status int, errMsg string) {
 
 func respondWithJson(w http.ResponseWriter, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(data)
 }
 
@@ -147,7 +146,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "some problem with the token")
 	}
-	spew.Dump(token)
+	respondWithJson(w, JWT{token})
 }
 
 func protectedEndpoint(w http.ResponseWriter, r *http.Request) {
