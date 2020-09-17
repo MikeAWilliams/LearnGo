@@ -8,7 +8,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/davecgh/go-spew/spew"
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/gorilla/mux"
 	"github.com/lib/pq"
 )
@@ -57,17 +58,28 @@ func respondWithError(w http.ResponseWriter, status int, errMsg string) {
 func signup(w http.ResponseWriter, r *http.Request) {
 	var user User
 	json.NewDecoder(r.Body).Decode(&user)
-	spew.Dump(user)
 
 	if user.Email == "" {
 		respondWithError(w, http.StatusBadRequest, "The email is missing")
 		return
 	}
-
 	if user.Password == "" {
 		respondWithError(w, http.StatusBadRequest, "The password is missing")
 		return
 	}
+
+	hashWord, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "unable to hash password")
+		return
+	}
+	user.Password = string(hashWord)
+	sql := "insert into users (email, password) values ($1, $2) RETURNING id;"
+	err = db.QueryRow(sql, user.Email, user.Password).Scan(&user.ID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "failed to insert into db")
+	}
+	user.Password = ""
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
