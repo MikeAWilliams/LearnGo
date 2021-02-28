@@ -1,30 +1,30 @@
-package maw_test
+package graph_test
 
 import (
 	"fmt"
-	"maw"
+	"graph"
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func buildTwoNodeGraph() (maw.Node, maw.Node) {
-	node1 := maw.NewSimpleNode("one")
-	node2 := maw.NewSimpleNode("two")
-	edge := maw.NewSimpleEdge(1, &node2)
+func buildTwoNodeGraph() (graph.Node, graph.Node) {
+	node1 := graph.NewSimpleNode("one")
+	node2 := graph.NewSimpleNode("two")
+	edge := graph.NewSimpleEdge(1, &node2)
 	node1.AddEdge(&edge)
 	return &node1, &node2
 }
 
-func buildFourNodeGraph() maw.Node {
+func buildFourNodeGraph() graph.Node {
 	root, node2 := buildTwoNodeGraph()
-	node3 := maw.NewSimpleNode("three")
-	edge23 := maw.NewSimpleEdge(1, &node3)
+	node3 := graph.NewSimpleNode("three")
+	edge23 := graph.NewSimpleEdge(1, &node3)
 	node2.AddEdge(&edge23)
 
-	node4 := maw.NewSimpleNode("four")
-	edge14 := maw.NewSimpleEdge(4, &node4)
+	node4 := graph.NewSimpleNode("four")
+	edge14 := graph.NewSimpleEdge(4, &node4)
 	root.AddEdge(&edge14)
 	return root
 }
@@ -51,18 +51,18 @@ func (t terminalWriter) Write(bytes []byte) (int, error) {
 	return len(bytes), nil
 }
 
-func doGraphvizOutputToTerminal(root maw.Node) {
+func doGraphvizOutputToTerminal(root graph.Node) {
 	writer := terminalWriter{}
-	maw.OutputGraph(root, writer)
+	graph.OutputGraph(root, writer)
 }
 
-func doGraphvizOutputToFile(root maw.Node, fileName string) error {
+func doGraphvizOutputToFile(root graph.Node, fileName string) error {
 	file, err := os.Create(fileName)
 	if nil != err {
 		return err
 	}
 	defer file.Close()
-	maw.OutputGraphDfs(root, file)
+	graph.OutputGraphDfs(root, file)
 	return nil
 }
 

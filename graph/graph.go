@@ -1,4 +1,4 @@
-package maw
+package graph
 
 type Node interface {
 	Name() string

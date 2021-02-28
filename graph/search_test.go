@@ -1,23 +1,23 @@
-package maw_test
+package graph_test
 
 import (
-	"maw"
+	"graph"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-var visited []maw.Node
+var visited []graph.Node
 
-func visit(node maw.Node) {
+func visit(node graph.Node) {
 	visited = append(visited, node)
 }
 
 func Test_BreadthFirst(t *testing.T) {
 	root := buildFourNodeGraph()
-	visited = []maw.Node{}
+	visited = []graph.Node{}
 
-	maw.BreadthFirstSearch(root, visit)
+	graph.BreadthFirstSearch(root, visit)
 
 	expectedNames := []string{"one", "two", "four", "three"}
 	require.Equal(t, len(expectedNames), len(visited))
@@ -25,28 +25,28 @@ func Test_BreadthFirst(t *testing.T) {
 
 func Test_DepthFirstSearch(t *testing.T) {
 	root := buildFourNodeGraph()
-	visited = []maw.Node{}
+	visited = []graph.Node{}
 
-	maw.DepthFirstSearch(root, visit)
+	graph.DepthFirstSearch(root, visit)
 
 	expectedNames := []string{"one", "two", "three", "four"}
 	require.Equal(t, len(expectedNames), len(visited))
 }
 
-func buildFourNodeGraphWithLoops() maw.Node {
+func buildFourNodeGraphWithLoops() graph.Node {
 	root, node2 := buildTwoNodeGraph()
-	edge2r := maw.NewSimpleEdge(4, root)
+	edge2r := graph.NewSimpleEdge(4, root)
 	node2.AddEdge(&edge2r)
 
-	node3 := maw.NewSimpleNode("three")
-	edge23 := maw.NewSimpleEdge(1, &node3)
+	node3 := graph.NewSimpleNode("three")
+	edge23 := graph.NewSimpleEdge(1, &node3)
 	node2.AddEdge(&edge23)
 
-	node4 := maw.NewSimpleNode("four")
-	edge14 := maw.NewSimpleEdge(4, &node4)
+	node4 := graph.NewSimpleNode("four")
+	edge14 := graph.NewSimpleEdge(4, &node4)
 	root.AddEdge(&edge14)
 
-	edge42 := maw.NewSimpleEdge(6, node2)
+	edge42 := graph.NewSimpleEdge(6, node2)
 	node4.AddEdge(&edge42)
 
 	//doGraphvizOutputToFile(root, "loopy.txt")
@@ -55,9 +55,9 @@ func buildFourNodeGraphWithLoops() maw.Node {
 }
 func Test_DepthFirstSearchWithLoop(t *testing.T) {
 	root := buildFourNodeGraphWithLoops()
-	visited = []maw.Node{}
+	visited = []graph.Node{}
 
-	maw.DepthFirstSearch(root, visit)
+	graph.DepthFirstSearch(root, visit)
 
 	expectedNames := []string{"one", "two", "three", "four"}
 	require.Equal(t, len(expectedNames), len(visited))

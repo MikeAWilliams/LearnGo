@@ -1,20 +1,20 @@
-package maw_test
+package graph_test
 
 import (
-	"maw"
+	"graph"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Queue_IsEmptyAtStart(t *testing.T) {
-	testObject := maw.Queue{}
+	testObject := graph.Queue{}
 	require.True(t, testObject.IsEmpty())
 }
 
 func Test_Queue_PushPop(t *testing.T) {
 	items := []string{"one", "two", "three"}
-	testObject := maw.Queue{}
+	testObject := graph.Queue{}
 	for _, item := range items {
 		testObject.Add(item)
 	}

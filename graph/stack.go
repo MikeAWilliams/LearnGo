@@ -1,4 +1,4 @@
-package maw
+package graph
 
 import "sync"
 
