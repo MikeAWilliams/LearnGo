@@ -1,0 +1,5 @@
+digraph thegrapyh {
+"one"->"two" [label=0];
+"two"->"three" [label=1];
+"one"->"four" [label=4];
+}

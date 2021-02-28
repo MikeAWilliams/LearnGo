@@ -1,0 +1,10 @@
+digraph thegrapyh {
+"one"->"two" [label=1];
+"one"->"extra one" [label=10];
+"extra one"->"extra two" [label=20];
+"extra two"->"extra three" [label=30];
+"extra three"->"five" [label=40];
+"two"->"three" [label=2];
+"three"->"four" [label=3];
+"four"->"five" [label=4];
+}
