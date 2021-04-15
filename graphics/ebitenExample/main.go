@@ -7,6 +7,7 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 const (
@@ -21,7 +22,7 @@ var (
 
 func init() {
 	emptyImage.Fill(color.White)
-	circlePoints = genUnitCircle(16)
+	circlePoints = genUnitCircle(40)
 }
 
 func genUnitCircle(num int) []ebiten.Vertex {
@@ -78,10 +79,61 @@ func generateCircle(x, y, rad, r, g, b float32) []ebiten.Vertex {
 
 type Game struct {
 	vertices []ebiten.Vertex
+	radius float32
+	x float32
+	y float32
+	vx float32
+	vy float32
+	r float32
+	g float32
+	b float32
+}
+
+func pegColorValue(value float32) float32 {
+	if value > 1 {
+		return 1
+	}
+	if value < 0 {
+		return 0
+	}
+	return value
 }
 
 func (g *Game) Update() error {
-	g.vertices = generateCircle(200.0, 200.0, 100.0, 1.0, 0.0, 0.0)
+	if inpututil.IsKeyJustPressed(ebiten.KeyQ) {
+		g.r -= 0.1
+		g.r = pegColorValue(g.r)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyW) {
+		g.r += 0.1
+		g.r = pegColorValue(g.r)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyA) {
+		g.g -= 0.1
+		g.g = pegColorValue(g.g)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
+		g.g += 0.1
+		g.g = pegColorValue(g.g)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyZ) {
+		g.b -= 0.1
+		g.b = pegColorValue(g.b)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyX) {
+		g.b += 0.1
+		g.b = pegColorValue(g.b)
+	}
+	g.x += g.vx
+	g.y += g.vy 
+	if g.x > screenWidth-g.radius || g.x < g.radius{
+		g.vx *=-1
+	}
+	if g.y > screenHeight-g.radius || g.y < g.radius{
+		g.vy *=-1
+	}
+
+	g.vertices = generateCircle(g.x, g.y, g.radius, g.r, g.g, g.b)
 	return nil
 }
 
@@ -102,8 +154,8 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func main() {
 	ebiten.SetWindowSize(screenWidth, screenHeight)
-	ebiten.SetWindowTitle("Polygons (Ebiten Demo)")
-	if err := ebiten.RunGame(&Game{}); err != nil {
+	ebiten.SetWindowTitle("Circle")
+	if err := ebiten.RunGame(&Game{vx: 1, vy: 1, x: 100, y: 100, radius: 50, r: 1, g: 1, b: 1}); err != nil {
 		log.Fatal(err)
 	}
 }
