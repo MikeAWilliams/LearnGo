@@ -80,16 +80,25 @@ func generateCircle(x, y, rad, r, g, b float32) []ebiten.Vertex {
 	return result
 }
 
+type rectangle struct {
+	x      float64
+	y      float64
+	width  float64
+	height float64
+}
+
 type Game struct {
-	vertices []ebiten.Vertex
-	radius   float32
-	x        float32
-	y        float32
-	vx       float32
-	vy       float32
-	r        float32
-	g        float32
-	b        float32
+	vertices         []ebiten.Vertex
+	radius           float32
+	x                float32
+	y                float32
+	vx               float32
+	vy               float32
+	r                float32
+	g                float32
+	b                float32
+	rectangels       []rectangle
+	currentRectangle *rectangle
 }
 
 func pegColorValue(value float32) float32 {
@@ -137,13 +146,6 @@ func (g *Game) updateBall() {
 		g.b += 0.1
 		g.b = pegColorValue(g.b)
 	}
-	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-		g.radius -= 1
-	}
-	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight) {
-		g.radius += 1
-	}
-	g.radius = pegRadius(g.radius)
 	g.x += g.vx
 	g.y += g.vy
 	if g.x > screenWidth-g.radius || g.x < g.radius {
@@ -156,8 +158,26 @@ func (g *Game) updateBall() {
 	g.vertices = generateCircle(g.x, g.y, g.radius, g.r, g.g, g.b)
 }
 
+func (g *Game) updateRectangles() {
+	currentX, currentY := ebiten.CursorPosition()
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		g.currentRectangle = &rectangle{}
+		g.currentRectangle.x = float64(currentX)
+		g.currentRectangle.y = float64(currentY)
+	}
+	if nil != g.currentRectangle {
+		g.currentRectangle.width = float64(currentX - int(g.currentRectangle.x))
+		g.currentRectangle.height = float64(currentY - int(g.currentRectangle.y))
+	}
+	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+		g.rectangels = append(g.rectangels, *g.currentRectangle)
+		g.currentRectangle = nil
+	}
+}
+
 func (g *Game) Update() error {
 	g.updateBall()
+	g.updateRectangles()
 	return nil
 }
 
@@ -172,9 +192,17 @@ func (g *Game) drawBall(canvas *ebiten.Image) {
 	canvas.DrawTriangles(g.vertices, indices, emptyImage.SubImage(image.Rect(1, 1, 2, 2)).(*ebiten.Image), ballOptions)
 }
 
-func (g *Game) drawRectangles(canvas *ebiten.Image) {
+func rgbFloatToInt(in float32) uint8 {
+	return uint8(in * 255)
+}
 
-	ebitenutil.DrawRect(canvas, 0, 0, 100, 100, color.White)
+func (g *Game) drawRectangles(canvas *ebiten.Image) {
+	for _, rec := range g.rectangels {
+		ebitenutil.DrawRect(canvas, rec.x, rec.y, rec.width, rec.height, color.RGBA{R: rgbFloatToInt(g.r), G: rgbFloatToInt(g.g), B: rgbFloatToInt(g.b), A: 255})
+	}
+	if nil != g.currentRectangle {
+		ebitenutil.DrawRect(canvas, g.currentRectangle.x, g.currentRectangle.y, g.currentRectangle.width, g.currentRectangle.height, color.RGBA{R: rgbFloatToInt(g.r), G: rgbFloatToInt(g.g), B: rgbFloatToInt(g.b), A: 255})
+	}
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
