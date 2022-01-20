@@ -13,10 +13,12 @@ import (
 const (
 	screenWidth  = 640
 	screenHeight = 480
+	maxRadius    = 100
+	minRadius    = 1
 )
 
 var (
-	emptyImage = ebiten.NewImage(3, 3)
+	emptyImage   = ebiten.NewImage(3, 3)
 	circlePoints = []ebiten.Vertex{}
 )
 
@@ -79,14 +81,14 @@ func generateCircle(x, y, rad, r, g, b float32) []ebiten.Vertex {
 
 type Game struct {
 	vertices []ebiten.Vertex
-	radius float32
-	x float32
-	y float32
-	vx float32
-	vy float32
-	r float32
-	g float32
-	b float32
+	radius   float32
+	x        float32
+	y        float32
+	vx       float32
+	vy       float32
+	r        float32
+	g        float32
+	b        float32
 }
 
 func pegColorValue(value float32) float32 {
@@ -95,6 +97,16 @@ func pegColorValue(value float32) float32 {
 	}
 	if value < 0 {
 		return 0
+	}
+	return value
+}
+
+func pegRadius(value float32) float32 {
+	if value > maxRadius {
+		return maxRadius
+	}
+	if value < minRadius {
+		return minRadius
 	}
 	return value
 }
@@ -124,13 +136,20 @@ func (g *Game) Update() error {
 		g.b += 0.1
 		g.b = pegColorValue(g.b)
 	}
-	g.x += g.vx
-	g.y += g.vy 
-	if g.x > screenWidth-g.radius || g.x < g.radius{
-		g.vx *=-1
+	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+		g.radius -= 1
 	}
-	if g.y > screenHeight-g.radius || g.y < g.radius{
-		g.vy *=-1
+	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight) {
+		g.radius += 1
+	}
+	g.radius = pegRadius(g.radius)
+	g.x += g.vx
+	g.y += g.vy
+	if g.x > screenWidth-g.radius || g.x < g.radius {
+		g.vx *= -1
+	}
+	if g.y > screenHeight-g.radius || g.y < g.radius {
+		g.vy *= -1
 	}
 
 	g.vertices = generateCircle(g.x, g.y, g.radius, g.r, g.g, g.b)
@@ -141,7 +160,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawTrianglesOptions{}
 	op.Address = ebiten.AddressUnsafe
 	indices := []uint16{}
-	vertexCount := len(g.vertices) -1
+	vertexCount := len(g.vertices) - 1
 	for i := 0; i < vertexCount; i++ {
 		indices = append(indices, uint16(i), uint16(i+1)%uint16(vertexCount), uint16(vertexCount))
 	}
