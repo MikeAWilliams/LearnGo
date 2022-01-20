@@ -7,6 +7,7 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
@@ -111,7 +112,7 @@ func pegRadius(value float32) float32 {
 	return value
 }
 
-func (g *Game) Update() error {
+func (g *Game) updateBall() {
 	if inpututil.IsKeyJustPressed(ebiten.KeyQ) {
 		g.r -= 0.1
 		g.r = pegColorValue(g.r)
@@ -153,18 +154,32 @@ func (g *Game) Update() error {
 	}
 
 	g.vertices = generateCircle(g.x, g.y, g.radius, g.r, g.g, g.b)
+}
+
+func (g *Game) Update() error {
+	g.updateBall()
 	return nil
 }
 
-func (g *Game) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawTrianglesOptions{}
-	op.Address = ebiten.AddressUnsafe
+func (g *Game) drawBall(canvas *ebiten.Image) {
+	ballOptions := &ebiten.DrawTrianglesOptions{}
+	ballOptions.Address = ebiten.AddressUnsafe
 	indices := []uint16{}
 	vertexCount := len(g.vertices) - 1
 	for i := 0; i < vertexCount; i++ {
 		indices = append(indices, uint16(i), uint16(i+1)%uint16(vertexCount), uint16(vertexCount))
 	}
-	screen.DrawTriangles(g.vertices, indices, emptyImage.SubImage(image.Rect(1, 1, 2, 2)).(*ebiten.Image), op)
+	canvas.DrawTriangles(g.vertices, indices, emptyImage.SubImage(image.Rect(1, 1, 2, 2)).(*ebiten.Image), ballOptions)
+}
+
+func (g *Game) drawRectangles(canvas *ebiten.Image) {
+
+	ebitenutil.DrawRect(canvas, 0, 0, 100, 100, color.White)
+}
+
+func (g *Game) Draw(screen *ebiten.Image) {
+	g.drawBall(screen)
+	g.drawRectangles(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
