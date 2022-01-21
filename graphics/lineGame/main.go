@@ -6,11 +6,13 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 const (
 	screenWidth  = 640
 	screenHeight = 480
+	pointW       = 50
 )
 
 var (
@@ -31,6 +33,11 @@ type line struct {
 type Game struct {
 	board      []line
 	boardColor color.Color
+	p1Color    color.Color
+	p2Color    color.Color
+	p1Points   []point
+	p2Points   []point
+	isP1turn   bool
 }
 
 func NewGame() *Game {
@@ -46,10 +53,27 @@ func NewGame() *Game {
 	result.board = append(result.board, line{p1: lr, p2: ll})
 	result.board = append(result.board, line{p1: ll, p2: ul})
 	result.boardColor = color.White
+	result.p1Color = color.RGBA{R: 255, G: 0, B: 0, A: 255}
+	result.p2Color = color.RGBA{R: 0, G: 0, B: 255, A: 255}
+	result.isP1turn = true
 	return &result
 }
 
+func (g *Game) addPointToCorrectPlayer() {
+	currentX, currentY := ebiten.CursorPosition()
+	point := point{x: float64(currentX - pointW/2), y: float64(currentY - pointW/2)}
+	if g.isP1turn {
+		g.p1Points = append(g.p1Points, point)
+	} else {
+		g.p2Points = append(g.p2Points, point)
+	}
+	g.isP1turn = !g.isP1turn
+}
+
 func (g *Game) Update() error {
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		g.addPointToCorrectPlayer()
+	}
 	return nil
 }
 
@@ -59,8 +83,18 @@ func (g *Game) drawBoard(canvas *ebiten.Image) {
 	}
 }
 
+func (g *Game) drawPoints(canvas *ebiten.Image) {
+	for _, p := range g.p1Points {
+		ebitenutil.DrawRect(canvas, p.x, p.y, pointW, pointW, g.p1Color)
+	}
+	for _, p := range g.p2Points {
+		ebitenutil.DrawRect(canvas, p.x, p.y, pointW, pointW, g.p2Color)
+	}
+}
+
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawBoard(screen)
+	g.drawPoints(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
