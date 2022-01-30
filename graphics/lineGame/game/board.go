@@ -20,18 +20,30 @@ type Board struct {
 
 func (b *Board) NearestPoint(source Point) (bool, *Point) {
 	sourceVec := vecFromPoint(source)
+	// todo initilize this more intelligently
+	var closestPoint *vec2.T
+	var closestDist float32
 	for _, line := range b.lines {
 		p1Tocource := vec2.Sub(&sourceVec, &line.p1)
+		dist := vec2.Dot(&line.dir, &p1Tocource)
 		fmt.Printf("p1ToSource (%v, %v)\n", p1Tocource[0], p1Tocource[1])
 		fmt.Printf("line.dir (%v, %v)\n", line.dir[0], line.dir[1])
-		dist := vec2.Dot(&line.dir, &p1Tocource)
 		fmt.Println(dist)
-		if dist > 1 {
-			return false, nil
+		if dist > 1 || dist < 0 {
+			continue
 		}
-		if dist < 0 {
-			return false, nil
+		toCandidate := line.dir.Scaled(dist)
+		candidate := vec2.Add(&line.p1, &toCandidate)
+		sourceToCandidate := vec2.Sub(&candidate, &sourceVec)
+		distFromSource := sourceToCandidate.Length()
+		if nil == closestPoint || distFromSource < closestDist {
+			closestDist = distFromSource
+			closestPoint = &candidate
 		}
 	}
-	return true, &Point{}
+	if nil == closestPoint {
+		return false, &Point{}
+	}
+	result := pointFromVec(*closestPoint)
+	return true, &result
 }
