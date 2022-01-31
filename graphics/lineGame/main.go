@@ -17,11 +17,6 @@ const (
 	pointW       = 50
 )
 
-var (
-	emptyImage   = ebiten.NewImage(3, 3)
-	circlePoints = []ebiten.Vertex{}
-)
-
 type Game struct {
 	board         game.Board
 	boardToDraw   []game.Segment
