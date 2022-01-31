@@ -183,3 +183,31 @@ func TestNearestPoint_BoardIsSquare(t *testing.T) {
 	require.Equal(t, 0.5, result.X)
 	require.Equal(t, 0.0, result.Y)
 }
+
+func TestNearestPoint_BoardIsNonUnitSingleLineUp_TestPointIsOnSegment(t *testing.T) {
+	p1 := game.Point{X: float64(0), Y: float64(0)}
+	p2 := game.Point{X: float64(0), Y: float64(100)}
+	testObject := game.NewBoard([]game.Segment{{P1: p1, P2: p2}})
+
+	// above
+	found, _ := testObject.NearestPoint(game.Point{X: float64(0), Y: float64(101)})
+	require.False(t, found)
+
+	// below
+	found, _ = testObject.NearestPoint(game.Point{X: float64(0), Y: float64(-0.1)})
+	require.False(t, found)
+
+	// inside
+	found, rp := testObject.NearestPoint(game.Point{X: float64(0), Y: float64(0.0)})
+	require.True(t, found)
+	require.Equal(t, 0.0, rp.X)
+	require.Equal(t, 0.0, rp.Y)
+	found, rp = testObject.NearestPoint(game.Point{X: float64(0), Y: float64(100)})
+	require.True(t, found)
+	require.Equal(t, 0.0, rp.X)
+	require.Equal(t, 100.0, rp.Y)
+	found, rp = testObject.NearestPoint(game.Point{X: float64(0), Y: float64(50)})
+	require.True(t, found)
+	require.Equal(t, 0.0, rp.X)
+	require.Equal(t, 50.0, rp.Y)
+}

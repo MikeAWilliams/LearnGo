@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"log"
 
+	"github.com/MikeAWilliams/LearnGo/tree/master/graphics/lineGame/game"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -20,38 +21,30 @@ var (
 	circlePoints = []ebiten.Vertex{}
 )
 
-type point struct {
-	x float64
-	y float64
-}
-
-type line struct {
-	p1 point
-	p2 point
-}
-
 type Game struct {
-	board      []line
-	boardColor color.Color
-	p1Color    color.Color
-	p2Color    color.Color
-	p1Points   []point
-	p2Points   []point
-	isP1turn   bool
+	board       game.Board
+	boardToDraw []game.Segment
+	boardColor  color.Color
+	p1Color     color.Color
+	p2Color     color.Color
+	p1Points    []game.Point
+	p2Points    []game.Point
+	isP1turn    bool
 }
 
 func NewGame() *Game {
 	result := Game{}
 	// make board a square that is a little smaller than the screen
 	const offset = 50
-	ul := point{x: offset, y: offset}
-	ur := point{x: screenWidth - offset, y: offset}
-	ll := point{x: offset, y: screenHeight - offset}
-	lr := point{x: screenWidth - offset, y: screenHeight - offset}
-	result.board = append(result.board, line{p1: ul, p2: ur})
-	result.board = append(result.board, line{p1: ur, p2: lr})
-	result.board = append(result.board, line{p1: lr, p2: ll})
-	result.board = append(result.board, line{p1: ll, p2: ul})
+	ul := game.Point{X: offset, Y: offset}
+	ur := game.Point{X: screenWidth - offset, Y: offset}
+	ll := game.Point{X: offset, Y: screenHeight - offset}
+	lr := game.Point{X: screenWidth - offset, Y: screenHeight - offset}
+	result.boardToDraw = append(result.boardToDraw, game.Segment{P1: ul, P2: ur})
+	result.boardToDraw = append(result.boardToDraw, game.Segment{P1: ur, P2: lr})
+	result.boardToDraw = append(result.boardToDraw, game.Segment{P1: lr, P2: ll})
+	result.boardToDraw = append(result.boardToDraw, game.Segment{P1: ll, P2: ul})
+	result.board = game.NewBoard(result.boardToDraw)
 	result.boardColor = color.White
 	result.p1Color = color.RGBA{R: 255, G: 0, B: 0, A: 255}
 	result.p2Color = color.RGBA{R: 0, G: 0, B: 255, A: 255}
@@ -61,11 +54,15 @@ func NewGame() *Game {
 
 func (g *Game) addPointToCorrectPlayer() {
 	currentX, currentY := ebiten.CursorPosition()
-	point := point{x: float64(currentX - pointW/2), y: float64(currentY - pointW/2)}
+	point := game.Point{X: float64(currentX - pointW/2), Y: float64(currentY - pointW/2)}
+	found, boardPoint := g.board.NearestPoint(point)
+	if !found {
+		return
+	}
 	if g.isP1turn {
-		g.p1Points = append(g.p1Points, point)
+		g.p1Points = append(g.p1Points, *boardPoint)
 	} else {
-		g.p2Points = append(g.p2Points, point)
+		g.p2Points = append(g.p2Points, *boardPoint)
 	}
 	g.isP1turn = !g.isP1turn
 }
@@ -78,17 +75,17 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) drawBoard(canvas *ebiten.Image) {
-	for _, line := range g.board {
-		ebitenutil.DrawLine(canvas, line.p1.x, line.p1.y, line.p2.x, line.p2.y, g.boardColor)
+	for _, line := range g.boardToDraw {
+		ebitenutil.DrawLine(canvas, line.P1.X, line.P1.Y, line.P2.X, line.P2.Y, g.boardColor)
 	}
 }
 
 func (g *Game) drawPoints(canvas *ebiten.Image) {
 	for _, p := range g.p1Points {
-		ebitenutil.DrawRect(canvas, p.x, p.y, pointW, pointW, g.p1Color)
+		ebitenutil.DrawRect(canvas, p.X, p.Y, pointW, pointW, g.p1Color)
 	}
 	for _, p := range g.p2Points {
-		ebitenutil.DrawRect(canvas, p.x, p.y, pointW, pointW, g.p2Color)
+		ebitenutil.DrawRect(canvas, p.X, p.Y, pointW, pointW, g.p2Color)
 	}
 }
 
